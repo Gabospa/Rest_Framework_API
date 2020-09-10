@@ -1,8 +1,12 @@
 from django.shortcuts import render
 from django.http.response import JsonResponse
+
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+
 from .models import Album, Track
 from .serializer import AlbumSerializer
 
@@ -14,6 +18,7 @@ def album_list(request):
     if request.method == 'GET':
         albums = Album.objects.all()
         title = request.GET.get('album_name', None)
+        
         if title is not None:
             albums = albums.filter(title__icontains=title)
         
@@ -39,6 +44,7 @@ def album_detail(request, pk):
     
     # Function to GET a single album
     if request.method == 'GET':
+        authentication_class = (TokenAutentication,)
         album_serializer = AlbumSerializer(album)
         return JsonResponse(album_serializer.data)
     

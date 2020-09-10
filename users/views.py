@@ -1,8 +1,15 @@
 from django.shortcuts import render
-from rest_framework import generics, status
 from django.http.response import JsonResponse
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth import login, logout, authenticate
+
+from rest_framework.response import Response
+from rest_framework import generics, status
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Persona
 from .serializer import PersonaSerializer
@@ -55,7 +62,9 @@ def person_detail(request, pk):
         person.delete()
         return JsonResponse({'message': 'El usuario ha sido borrado'}, status=status.HTTP_204_NO_CONTENT)
 
-
+def logout(request, format = None):
+    request.user.auth_token.delete()
+    return Response(status = status.HTTP_200_OK)
 
 
 """
